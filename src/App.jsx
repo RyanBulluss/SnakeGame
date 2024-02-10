@@ -1,29 +1,20 @@
-import './App.css';
-import GameCell from './GameCell';
-import { useState, useEffect } from 'react';
+import "./App.css";
+import { useState, useEffect } from "react";
+import { boardWidth, startState } from "./constants";
+import GameCell from "./GameCell";
 
 function App() {
-  const [boardWidth, setBoardWidth] = useState(7);
-  const [state, setState] = useState([]);
-  
-
-  useEffect(() => {
-    let newState = []
-    for (let i = 0; i < boardWidth * boardWidth; i++) {
-      newState.push(0);
-    }
-    newState[3] = 1
-    setState(newState);
-  }, [boardWidth]);
+  const [state, setState] = useState(startState())
 
 
+  console.log(state);
 
   return (
-    <div className='bg-green-700 h-[100vh] flex justify-center items-center'>
+    <div className="bg-green-700 h-[100vh] flex justify-center items-center">
       <div className={"bg-green-400 h-[60vmin] w-[60vmin] grid cols-" + boardWidth}>
-        {state.map((value, index) => (
-          <GameCell value={value} index={index} key={index} />
-        ))}
+        {state.map((arr, yIndex) => arr.map((value, xIndex) => (
+          <GameCell value={value} />
+        ) ))}
       </div>
     </div>
   );

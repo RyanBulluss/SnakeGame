@@ -1,16 +1,11 @@
 
 
-export default function ({index, value}) {
-  return (
-    <div
-      key={index}
-      className={
-        index % 2 === 0
-          ? "bg-green-500 flex justify-center items-center"
-          : "bg-green-400 flex justify-center items-center"
-      }
-    >
-      <div className={value === 1 ? "bg-blue-500 w-full h-full" : ""}></div>
-    </div>
-  );
+export default function GameCell( {value} ) {
+
+
+    return (
+        <div className={value === 2 ? "bg-red-500 rounded-full" : value === 1 ? "bg-blue-500" : ""}>
+            {value}
+        </div>
+    )
 }
