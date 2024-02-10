@@ -1,5 +1,5 @@
 const boardWidth = 12;
-const snakeStartPosition = [0, 0];
+const snakeStartPosition = [3, 3];
 const appleStartPosition = [5, 5];
 
 const startState = () => {
@@ -16,7 +16,14 @@ const startState = () => {
   return newState;
 };
 
-const startDirection = "RIGHT";
+const boundaries = {
+  top: 0,
+  bottom: boardWidth,
+  left: 0,
+  right: boardWidth
+}
+
+const startDirection = "DOWN";
 
 export {
   startState,
@@ -24,4 +31,5 @@ export {
   snakeStartPosition,
   appleStartPosition,
   startDirection,
+  boundaries
 };
