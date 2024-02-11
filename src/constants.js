@@ -1,7 +1,12 @@
-const boardWidth = 12;
-const snakeStartLength = 10;
-const snakeStartPosition = [[0, 1], [0, 0]];
+const gameSpeed = 50;
+const boardWidth = 24;
+const snakeStartLength = 3;
+const snakeStartPosition = [
+  [0, 1],
+  [0, 0],
+];
 const appleStartPosition = [5, 5];
+const startScore = 0;
 
 const startState = () => {
   let newState = [];
@@ -16,16 +21,12 @@ const startState = () => {
   newState[snakeStartPosition[0][0]][snakeStartPosition[0][1]] = 1;
   newState[snakeStartPosition[1][0]][snakeStartPosition[1][1]] = 1;
   newState[appleStartPosition[0]][appleStartPosition[1]] = 2;
+  newState[appleStartPosition[0]][appleStartPosition[1] + 1] = 2;
+  newState[appleStartPosition[0] + 1][appleStartPosition[1] + 1] = 2;
+  newState[appleStartPosition[0] + 1][appleStartPosition[1]] = 2;
+  newState[appleStartPosition[0]][appleStartPosition[1] + 2] = 2;
   return newState;
 };
-
-
-const boundaries = {
-  top: 0,
-  bottom: boardWidth,
-  left: 0,
-  right: boardWidth
-}
 
 const startDirection = "RIGHT";
 
@@ -35,6 +36,7 @@ export {
   snakeStartPosition,
   appleStartPosition,
   startDirection,
-  boundaries,
-  snakeStartLength
+  snakeStartLength,
+  startScore,
+  gameSpeed,
 };

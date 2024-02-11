@@ -5,8 +5,9 @@ import {
   startState,
   startDirection,
   snakeStartPosition,
-  boundaries,
   snakeStartLength,
+  startScore,
+  gameSpeed
 } from "./constants";
 import GameCell from "./GameCell";
 
@@ -17,21 +18,18 @@ function App() {
   const [snakeLength, setSnakeLength] = useState(snakeStartLength);
   const [render, setRender] = useState(false);
   const [playing, setPlaying] = useState(true);
-  const [score, setScore] = useState(0);
+  const [score, setScore] = useState(startScore);
 
   // Makes every snake coord to be a 1 and deletes the tail once moved
   function renderSnake(oldPosition) {
-    
-    
-
-    setState(s => {
+    setState((s) => {
       const newState = [...s];
       snake.forEach((arr) => {
         newState[arr[0]][arr[1]] = 1;
       });
       if (!!oldPosition) newState[oldPosition[0]][oldPosition[1]] = 0;
       return newState;
-    })
+    });
   }
 
   useEffect(() => {
@@ -64,7 +62,7 @@ function App() {
     const interval = setInterval(() => {
       moveSnake();
       setRender((prev) => !prev);
-    }, 100);
+    }, gameSpeed);
 
     return () => clearInterval(interval);
   }, [snake, direction, playing]);
@@ -73,16 +71,19 @@ function App() {
     setPlaying(false);
   }
 
-  // Based on the direction adds the new value to the snake array
   function moveSnake() {
     const newPosition = checkNextPosition();
+
     let oldPosition;
     const newSnake = [newPosition, ...snake];
-    if (snake.length - 1  >= snakeLength) {oldPosition = newSnake.pop()};
+    if (snake.length - 1 >= snakeLength) {
+      oldPosition = newSnake.pop();
+    }
     renderSnake(oldPosition);
-    console.log(newPosition)
     if (OutOfBounds(newPosition)) return gameOver();
-    console.log(state)
+    if (hittingSelf(newPosition)) return gameOver();
+    hittingFood(newPosition);
+
     setSnake(newSnake);
   }
 
@@ -103,6 +104,49 @@ function App() {
         break;
     }
     return position;
+  }
+
+  function restartGame() {
+    setState(startState())
+    setScore(startScore);
+    setDirection(startDirection);
+    setSnake(snakeStartPosition);
+    setSnakeLength(snakeStartLength);
+    setPlaying(true);
+  }
+
+  function rng(n) {
+    return Math.floor(Math.random() * n);
+  }
+
+  function spawnFood() {
+    let location;
+    while (!location) {
+      let n1 = rng(boardWidth);
+      let n2 = rng(boardWidth);
+      if (state[n1][n2] === 0) {
+        location = [n1, n2];
+      }
+    }
+    setState((s) => {
+      let newState = [...s];
+      newState[location[0]][location[1]] = 2;
+      return newState;
+    });
+  }
+
+  function hittingFood(newPosition) {
+    if (state[newPosition[0]][newPosition[1]] === 2) {
+      setScore(score + 1);
+      setSnakeLength(snakeLength + 1);
+      spawnFood();
+    }
+  }
+
+  function hittingSelf(newPosition) {
+    let result = false;
+    if (state[newPosition[0]][newPosition[1]] === 1) result = true;
+    return result;
   }
 
   function OutOfBounds(newPosition) {
@@ -127,7 +171,7 @@ function App() {
           arr.map((value, xIndex) => <GameCell value={state[yIndex][xIndex]} />)
         )}
       </div>
-      <button className="bg-gray-700 text-white p-2 rounded-xl">
+      <button onClick={() => restartGame()} className="bg-gray-700 text-white p-2 rounded-xl">
         Restart Game
       </button>
     </div>
