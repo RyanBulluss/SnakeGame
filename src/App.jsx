@@ -13,22 +13,25 @@ import GameCell from "./GameCell";
 function App() {
   const [state, setState] = useState(startState());
   const [direction, setDirection] = useState(startDirection);
-  const [snake, setSnake] = useState([[0, 0]]);
+  const [snake, setSnake] = useState(snakeStartPosition);
   const [snakeLength, setSnakeLength] = useState(snakeStartLength);
   const [render, setRender] = useState(false);
   const [playing, setPlaying] = useState(true);
   const [score, setScore] = useState(0);
 
   // Makes every snake coord to be a 1 and deletes the tail once moved
-  function renderSnake(oldSnake) {
-    const newState = [...state];
-    snake.forEach((arr) => {
-      newState[arr[0]][arr[1]] = 1;
-      console.log(newState, arr[0], arr[1], newState[arr[0]][arr[1]]);
-    });
+  function renderSnake(oldPosition) {
+    
+    
 
-    // newState[oldSnake[0]][oldSnake[1]] = 0;
-    setState(newState);
+    setState(s => {
+      const newState = [...s];
+      snake.forEach((arr) => {
+        newState[arr[0]][arr[1]] = 1;
+      });
+      if (!!oldPosition) newState[oldPosition[0]][oldPosition[1]] = 0;
+      return newState;
+    })
   }
 
   useEffect(() => {
@@ -46,8 +49,6 @@ function App() {
         case "d":
           setDirection("RIGHT");
           break;
-        default:
-          break;
       }
     };
     window.addEventListener("keydown", handleKeyPress);
@@ -63,33 +64,30 @@ function App() {
     const interval = setInterval(() => {
       moveSnake();
       setRender((prev) => !prev);
-    }, 1000);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [snake, direction, playing]);
 
   function gameOver() {
     setPlaying(false);
-    console.log("hello");
   }
 
   // Based on the direction adds the new value to the snake array
   function moveSnake() {
     const newPosition = checkNextPosition();
+    let oldPosition;
+    const newSnake = [newPosition, ...snake];
+    if (snake.length - 1  >= snakeLength) {oldPosition = newSnake.pop()};
+    renderSnake(oldPosition);
+    console.log(newPosition)
     if (OutOfBounds(newPosition)) return gameOver();
-
-    const newSnake = [...snake];
-    // console.log(state);
-    newSnake.unshift(newPosition);
-
-    const oldSnake = newSnake.pop();
+    console.log(state)
     setSnake(newSnake);
-
-    renderSnake(oldSnake);
   }
 
   function checkNextPosition() {
-    let position = snake[0];
+    let position = [...snake[0]];
     switch (direction) {
       case "UP":
         position[0]--;
@@ -110,8 +108,8 @@ function App() {
   function OutOfBounds(newPosition) {
     let result = false;
     if (
-      newPosition[0] + 1 > boardWidth ||
-      newPosition[1] + 1 > boardWidth ||
+      newPosition[0] >= boardWidth ||
+      newPosition[1] >= boardWidth ||
       newPosition[0] < 0 ||
       newPosition[1] < 0
     )

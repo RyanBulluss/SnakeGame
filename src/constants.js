@@ -1,5 +1,5 @@
 const boardWidth = 12;
-const snakeStartLength = 2;
+const snakeStartLength = 10;
 const snakeStartPosition = [[0, 1], [0, 0]];
 const appleStartPosition = [5, 5];
 
@@ -13,8 +13,8 @@ const startState = () => {
     newState.push(arr);
   }
   // These were causing bugs
-  // newState[snakeStartPosition[0][0]][snakeStartPosition[0][1]] = 1;
-  // newState[snakeStartPosition[1][0]][snakeStartPosition[1][1]] = 1;
+  newState[snakeStartPosition[0][0]][snakeStartPosition[0][1]] = 1;
+  newState[snakeStartPosition[1][0]][snakeStartPosition[1][1]] = 1;
   newState[appleStartPosition[0]][appleStartPosition[1]] = 2;
   return newState;
 };
