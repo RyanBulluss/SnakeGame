@@ -1,6 +1,6 @@
 const boardWidth = 12;
 const snakeStartLength = 2;
-const snakeStartPosition = [[6, 6], [7, 6]];
+const snakeStartPosition = [[0, 1], [0, 0]];
 const appleStartPosition = [5, 5];
 
 const startState = () => {
@@ -12,8 +12,9 @@ const startState = () => {
     }
     newState.push(arr);
   }
-  newState[snakeStartPosition[0][0]][snakeStartPosition[0][1]] = 1;
-  newState[snakeStartPosition[1][0]][snakeStartPosition[1][1]] = 1;
+  // These were causing bugs
+  // newState[snakeStartPosition[0][0]][snakeStartPosition[0][1]] = 1;
+  // newState[snakeStartPosition[1][0]][snakeStartPosition[1][1]] = 1;
   newState[appleStartPosition[0]][appleStartPosition[1]] = 2;
   return newState;
 };
@@ -26,7 +27,7 @@ const boundaries = {
   right: boardWidth
 }
 
-const startDirection = "DOWN";
+const startDirection = "RIGHT";
 
 export {
   startState,
