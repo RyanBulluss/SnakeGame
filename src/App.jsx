@@ -6,16 +6,19 @@ import {
   startDirection,
   snakeStartPosition,
   boundaries,
+  snakeStartLength,
 } from "./constants";
 import GameCell from "./GameCell";
 
 function App() {
   const [state, setState] = useState(startState());
   const [direction, setDirection] = useState(startDirection);
-  const [snake, setSnake] = useState([snakeStartPosition]);
+  const [snake, setSnake] = useState(snakeStartPosition);
+  const [snakeLength, setSnakeLength] = useState(snakeStartLength);
   const [render, setRender] = useState(false);
   const [playing, setPlaying] = useState(true);
 
+  // Makes every snake coord to be a 1 and deletes the tail once moved
   function updateState(oldSnake) {
     const newState = state;
     snake.forEach((arr) => {
@@ -27,31 +30,31 @@ function App() {
 
   useEffect(() => {
     const handleKeyPress = (e) => {
-      // Update direction based on key press
       switch (e.key) {
-        case 'w':
-          setDirection('UP');
+        case "w":
+          setDirection("UP");
           break;
-        case 's':
-          setDirection('DOWN');
+        case "s":
+          setDirection("DOWN");
           break;
-        case 'a':
-          setDirection('LEFT');
+        case "a":
+          setDirection("LEFT");
           break;
-        case 'd':
-          setDirection('RIGHT');
+        case "d":
+          setDirection("RIGHT");
           break;
         default:
           break;
       }
     };
-    window.addEventListener('keydown', handleKeyPress);
+    window.addEventListener("keydown", handleKeyPress);
 
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      window.removeEventListener("keydown", handleKeyPress);
     };
   }, []);
 
+  // If not playing stops the game, otherwise moves the snake 5 times per second
   useEffect(() => {
     if (!playing) return;
     const interval = setInterval(() => {
@@ -60,22 +63,43 @@ function App() {
     }, 200);
 
     return () => clearInterval(interval);
-  }, [snake, direction]);
+  }, [snake, direction, playing]);
 
+  function gameOver() {
+    setPlaying(false);
+  }
+
+  // Based on the direction adds the new value to the snake array
   function moveSnake() {
     const newSnake = snake;
     switch (direction) {
       case "UP":
-        newSnake.unshift([snake[0][0] - 1, snake[0][1]]);
+        if (snake[0][0] - 1 < boundaries.top) {
+          return gameOver();
+        } else {
+          newSnake.unshift([snake[0][0] - 1, snake[0][1]]);
+        }
         break;
       case "DOWN":
-        newSnake.unshift([snake[0][0] + 1, snake[0][1]]);
+        if (snake[0][0] + 1 >= boundaries.bottom) {
+          return gameOver();
+        } else {
+          newSnake.unshift([snake[0][0] + 1, snake[0][1]]);
+        }
         break;
       case "LEFT":
-        newSnake.unshift([snake[0][0], snake[0][1] - 1]);
+        if (snake[0][0] - 1 < boundaries.left) {
+          return gameOver();
+        } else {
+          newSnake.unshift([snake[0][0], snake[0][1] - 1]);
+        }
         break;
       case "RIGHT":
-        newSnake.unshift([snake[0][0], snake[0][1] + 1]);
+        if (snake[0][0] + 1 >= boundaries.right) {
+          return gameOver();
+        } else {
+          newSnake.unshift([snake[0][0], snake[0][1] + 1]);
+        }
         break;
     }
     if (
@@ -84,7 +108,7 @@ function App() {
       newSnake[1][0] >= boundaries.bottom - 1 ||
       newSnake[1][0] < boundaries.top + 1
     ) {
-      setPlaying(false);
+      gameOver();
     } else {
       const oldSnake = newSnake.pop();
       setSnake(newSnake);
